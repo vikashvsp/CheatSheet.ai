@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { cheatSheetSchema } from '@/app/api/generate/route';
+import { cheatSheetSchema } from '@/lib/schemas';
 import { z } from 'zod';
 
 type CheatSheetData = z.infer<typeof cheatSheetSchema>;
