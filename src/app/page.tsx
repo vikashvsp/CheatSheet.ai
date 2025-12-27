@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useScroll, useTransform, motion } from 'framer-motion';
-import { Search, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { Search, Loader2, Sparkles, AlertCircle, Download } from 'lucide-react';
 // import { useCompletion } from '@ai-sdk/react';
 // import { cheatSheetSchema } from '@/lib/schemas';
 // import { CheatSheetGrid } from '@/components/CheatSheetGrid';
@@ -13,10 +13,18 @@ export default function Home() {
     const [completion, setCompletion] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
     // const { completion, complete, isLoading, error } = useCompletion({
     //     api: '/api/generate',
     // });
+
+    const handleDownload = () => {
+        if (iframeRef.current && iframeRef.current.contentWindow) {
+            iframeRef.current.contentWindow.focus();
+            iframeRef.current.contentWindow.print();
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -61,49 +69,66 @@ export default function Home() {
         <main className="h-screen overflow-hidden bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-50 font-sans selection:bg-indigo-100 dark:selection:bg-indigo-900 flex flex-col">
 
             {/* Header / Search Section */}
-            <div className={`transition-all duration-700 ease-in-out ${hasStarted ? 'py-4 border-b border-slate-200 dark:border-slate-800' : 'py-32'} px-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md z-10 sticky top-0`}>
-                <div className="max-w-4xl mx-auto text-center space-y-6">
+            <div className={`transition-all duration-700 ease-in-out ${hasStarted ? 'py-4 border-b border-slate-200 dark:border-slate-800' : 'py-32'} px-6 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md z-10 sticky top-0`}>
+                <div className={`mx-auto w-full relative ${hasStarted ? 'max-w-7xl' : 'max-w-4xl'}`}>
 
-                    {!hasStarted && (
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 inline-block bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                                CheatSheet.ai
-                            </h1>
-                            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                                Turn any technical documentation into a beautiful, visual cheat sheet in seconds.
-                            </p>
-                        </motion.div>
-                    )}
-
-                    {/* Search Bar */}
-                    <div className="flex items-center justify-center gap-4">
-                        {hasStarted && (
-                            <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-pink-500 bg-clip-text text-transparent hidden md:block">
-                                CheatSheet.ai
-                            </h1>
-                        )}
-                        <motion.form
-                            onSubmit={handleSubmit}
-                            className={`relative w-full group ${hasStarted ? 'max-w-2xl' : 'max-w-xl mx-auto'}`}
-                            initial={false}
-                            animate={{ scale: hasStarted ? 1 : 1 }}
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-opacity" />
-                            <input
-                                type="text"
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                placeholder="e.g. 'Python Regex' or 'Next.js Routing'"
-                                className="relative w-full px-6 py-4 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-lg placeholder:text-slate-400"
-                            />
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="absolute right-3 top-3 p-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors disabled:opacity-50"
+                    <div className={`flex items-center ${hasStarted ? 'justify-start gap-8' : 'flex-col text-center gap-10 mb-8'}`}>
+                        {(!hasStarted || hasStarted) && (
+                            <motion.div
+                                initial={hasStarted ? { opacity: 0 } : { opacity: 1 }}
+                                animate={{ opacity: 1 }}
+                                className={hasStarted ? "shrink-0" : ""}
                             >
-                                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
-                            </button>
-                        </motion.form>
+                                <h1 className={`font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600 ${hasStarted ? 'text-2xl' : 'text-5xl mb-4'}`}>
+                                    CheatSheet.ai
+                                </h1>
+                                {!hasStarted && (
+                                    <p className="text-slate-500 dark:text-slate-400 text-lg">
+                                        Turn any technical documentation into a beautiful, visual cheat sheet in seconds.
+                                    </p>
+                                )}
+                            </motion.div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className={`relative group ${hasStarted ? 'flex-1 max-w-xl' : 'w-full max-w-xl'}`}>
+                            <div className=" absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+                            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 flex items-center p-2">
+                                <Search className="ml-3 text-slate-400 w-5 h-5 " />
+                                <input
+                                    type="text"
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    placeholder="e.g. 'Python Regex' or 'Next.js Routing'"
+                                    className="flex-1 bg-transparent border-none 
+             focus:outline-none focus:ring-0 
+             text-slate-900 dark:text-white 
+             placeholder-slate-400 px-4 py-2"
+                                    disabled={isLoading}
+                                />
+
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
+                                </button>
+                            </div>
+                        </form>
+
+                        {/* Download Button (Only visible when hasStarted) */}
+                        {hasStarted && !isLoading && completion.length > 0 && (
+                            <motion.button
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                onClick={handleDownload}
+                                className="ml-4 flex items-center gap-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-3 rounded-xl font-medium transition-colors"
+                                title="Download as PDF"
+                            >
+                                <Download className="w-5 h-5" />
+                                <span className="hidden sm:inline">PDF</span>
+                            </motion.button>
+                        )}
                     </div>
 
                 </div>
@@ -114,10 +139,20 @@ export default function Home() {
 
                 {error && (
                     <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                        <div className="max-w-md mx-auto p-4 bg-red-50 dark:bg-red-900/90 backdrop-blur text-red-600 dark:text-red-200 rounded-xl flex items-center gap-3 shadow-2xl pointer-events-auto">
-                            <AlertCircle className="w-5 h-5" />
-                            <p>Something went wrong: {error.message}. Try again.</p>
+                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-6 py-4 rounded-2xl shadow-lg flex items-center gap-3 pointer-events-auto mx-4">
+                            <AlertCircle className="w-6 h-6" />
+                            <div>
+                                <p className="font-semibold">Generation Failed</p>
+                                <p className="text-sm opacity-90">{error.message}</p>
+                            </div>
                         </div>
+                    </div>
+                )}
+
+                {/* Initial State Placeholder */}
+                {!hasStarted && !isLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                        <Sparkles className="w-96 h-96" />
                     </div>
                 )}
 
@@ -137,6 +172,7 @@ export default function Home() {
                 {hasStarted && (
                     <div className="w-full h-full">
                         <iframe
+                            ref={iframeRef}
                             srcDoc={completion}
                             className="w-full h-full border-0"
                             title="Generated Cheat Sheet"
