@@ -72,7 +72,7 @@ export default function Home() {
             <div className={`transition-all duration-700 ease-in-out ${hasStarted ? 'py-4 border-b border-slate-200 dark:border-slate-800' : 'py-32'} px-6 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md z-10 sticky top-0`}>
                 <div className={`mx-auto w-full relative ${hasStarted ? 'max-w-7xl' : 'max-w-4xl'}`}>
 
-                    <div className={`flex items-center ${hasStarted ? 'justify-start gap-8' : 'flex-col text-center gap-10 mb-8'}`}>
+                    <div className={`flex items-center ${hasStarted ? 'justify-center gap-8' : 'flex-col text-center gap-10 mb-8'}`}>
                         {(!hasStarted || hasStarted) && (
                             <motion.div
                                 initial={hasStarted ? { opacity: 0 } : { opacity: 1 }}
@@ -176,7 +176,7 @@ export default function Home() {
                             srcDoc={completion}
                             className="w-full h-full border-0"
                             title="Generated Cheat Sheet"
-                            sandbox="allow-scripts allow-same-origin"
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-popups-to-escape-sandbox"
                         />
                     </div>
                 )}
