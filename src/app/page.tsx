@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { useScroll, useTransform, motion } from 'framer-motion';
 import { Search, Loader2, Sparkles, AlertCircle, Download } from 'lucide-react';
+import Image from 'next/image';
 // import { useCompletion } from '@ai-sdk/react';
 // import { cheatSheetSchema } from '@/lib/schemas';
 // import { CheatSheetGrid } from '@/components/CheatSheetGrid';
@@ -151,8 +152,16 @@ export default function Home() {
 
                 {/* Initial State Placeholder */}
                 {!hasStarted && !isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-                        <Sparkles className="w-96 h-96" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+                        <div className="relative w-96 h-96">
+                            <Image
+                                src="/htf-logo.png"
+                                alt="Hack This Fall Background"
+                                fill
+                                className="object-contain"
+                                priority
+                            />
+                        </div>
                     </div>
                 )}
 
