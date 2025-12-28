@@ -173,7 +173,7 @@ export default function Home() {
                             <div className="w-4 h-4 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
                             <div className="w-4 h-4 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                         </div>
-                        <p className="text-slate-600 dark:text-slate-300 font-medium animate-pulse">Generating your custom webpage...</p>
+                        <p className="text-slate-600 dark:text-slate-300 font-medium animate-pulse">Generating your custom cheatsheet...</p>
                     </div>
                 )}
 
