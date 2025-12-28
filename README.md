@@ -30,7 +30,7 @@ We use Apify's trusted **Puppeteer Scraper** to instantly crawl, scrape, and ext
 
 - **Data Layer:** **Apify (Puppeteer Scraper)** 🕷️
 - **AI Engine:** Google Gemini Pro 🧠
-- **Framework:** Next.js 14 (App Router) ⚛️
+- **Framework:** Next.js 16 (App Router) ⚛️
 - **Styling:** Tailwind CSS + Framer Motion 🎨
 
 ## 🚀 Getting Started
